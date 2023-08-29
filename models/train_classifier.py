@@ -18,12 +18,15 @@ import pickle
 
 def load_data(database_filepath):
     """
-    Load data from database
-    Input: database_filepath including the cleaned data
-    Output:
-    X: Message (the feature data).
-    y: Category of each message (the target).
-    category_name: List including the category.
+    Loads data from a specified database file.
+    
+    Parameters:
+    - database_filepath: String representing the file path of the database containing the cleaned data.
+    
+    Returns:
+    - X: DataFrame or array-like object containing the message data (features).
+    - Y: DataFrame or array-like object containing the categories corresponding to each message (targets).
+    - category_names: List of strings representing the names of the categories.
     """
     
     # load data from database
@@ -38,15 +41,15 @@ def load_data(database_filepath):
 
 def tokenize(text: str) -> list:
     """
-    Tokenizes the provided text. URLs in the text are replaced with "urlplaceholder".
-    The text is then tokenized and lemmatized.
-
+    Tokenizes and lemmatizes the given text, while replacing any URLs with 'urlplaceholder'.
+    
     Parameters:
-    - text (str): The input text to be tokenized.
-
+    - text: String representing the text to be tokenized.
+    
     Returns:
-    - list: The cleaned and tokenized text.
+    - List of strings: Contains the cleaned, tokenized, and lemmatized words from the input text.
     """
+
     URL_REGEX = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     # Detect and replace URLs
     text = re.sub(URL_REGEX, "urlplaceholder", text)
@@ -64,10 +67,15 @@ def tokenize(text: str) -> list:
 
 def build_model():
     """
-    Build Machine Learning pipeline using tfidf, Random Forest, and Gridsearch
-    Input: None
-    Output: cv Results of GridSearch
+    Builds a Machine Learning pipeline using TF-IDF, Random Forest, and GridSearch.
+    
+    Parameters:
+    - None
+    
+    Returns:
+    - cv: The results of the GridSearch, typically a fitted GridSearchCV object.
     """
+
     # Create pipeline with Classifier
     pipeline = Pipeline([
                         ('vect', CountVectorizer(tokenizer=tokenize)),
@@ -85,15 +93,18 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_name):
-    '''
-    Evaluate model performance using the test data
-    Input: 
-    model: model to be evaluated
-    X_test: test data (the feature data)
-    Y_test: true lables for test data
-    category_name: labels for the included categories (N=36)
-    Output: accuracy and classfication report of each category
-    '''
+    """
+    Evaluates the performance of a given model using test data.
+    
+    Parameters:
+    - model: The machine learning model to be evaluated.
+    - X_test: DataFrame or array-like object containing the feature data for testing.
+    - Y_test: DataFrame or array-like object containing the true labels for the test data.
+    - category_names: List of strings representing the names of the categories (N=36).
+    
+    Returns:
+    - Prints the accuracy and classification report for each category.
+    """
     # Get results and add them to a dataframe.
     Y_pred = model.predict(X_test)
     
@@ -107,14 +118,16 @@ def evaluate_model(model, X_test, Y_test, category_name):
                                                         Y_pred[:,i])))
 
 def save_model(model, model_filepath):
-    '''
-    Save model as a pickle file 
-    Input: 
-        model: Model to be saved
-        model_filepath: path of the output pick file
-    Output:
-        A pickle file of saved model
-    '''
+    """
+    Saves the given model as a pickle file at the specified file path.
+    
+    Parameters:
+    - model: The machine learning model to be saved.
+    - model_filepath: String representing the file path where the pickle file will be saved.
+    
+    Returns:
+    - Saves the model as a pickle file at the specified location.
+    """
     pickle.dump(model, open(model_filepath, "wb"))
 
 
@@ -140,11 +153,9 @@ def main():
         print('Trained model saved!')
 
     else:
-        print('Please provide the filepath of the disaster messages database '\
-              'as the first argument and the filepath of the pickle file to '\
-              'save the model to as the second argument. \n\nExample: python '\
-              'train_classifier.py ../data/DisasterResponse.db classifier.pkl')
-
+        print('Provide the file path for the disaster messages database as the first argument,'\
+        'and the file path for the pickle file where the model will be saved as the second argument.\n\nUsage '\
+        'Example: python train_classifier.py ../data/DisasterResponse.db classifier.pkl')
 
 if __name__ == '__main__':
     main()
